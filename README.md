@@ -12,7 +12,9 @@ Example configuration:
 dirs = ~/code/*
 
 [settings]
-preferred_name = Browse!
+name = Browse!
+port = 8000
+tag = If it isn't broken, you were not the target
 ```
 
 The `*` is matched against all the directories in the specified parent and displays them as standalone dirs, else they are sub dirs.
