@@ -48,13 +48,13 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	searchTmpl, err := templates.ReadFile("search.tmpl")
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Template not found", http.StatusNotFound)
+		NotFound(w, r, "search template not found!")
 		return
 	}
 	headerTmpl, err := templates.ReadFile("header.tmpl")
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Template not found", http.StatusNotFound)
+		NotFound(w, r, "header template not found!")
 		return
 	}
 
@@ -62,7 +62,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	_, err = tmpl.New("header").Parse(string(headerTmpl))
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Template parsing error", http.StatusInternalServerError)
+		InternalError(w, r, "Template parsing error")
 		return
 	}
 
@@ -108,7 +108,8 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	data.HLast = buildPaginationURL(query, totalPages)
 
 	if err := tmpl.Execute(w, data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		InternalError(w, r, err.Error())
+		return
 	}
 }
 

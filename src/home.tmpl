@@ -2,33 +2,78 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.7.45">
-  <title>Explore Your Code Locally</title>
+  <title>{{.Name}} | {{.Tag}}</title>
   <style>
     body {
+      font-family: Arial, sans-serif;
       line-height: 1.6;
       margin: 0;
       padding: 0;
       background-color: #f4f4f4;
+      color: #375eab;
     }
-    header {
-      background-color: #333;
-      color: #fff;
+    main {
       padding: 1rem;
-      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 {
+      color: #375eab;
+    }
+    h2 {
+      border-bottom: 2px solid #375eab;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
     }
     p {
-      margin: 1rem;
+      margin: 1rem 0;
+    }
+    a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    span {
+      color: #666;
+      font-size: 0.9rem;
+    }
+    section {
+      margin-top: 2rem;
+    }
+    .intro {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    .cta {
+      background-color: #007BFF;
+      color: #fff;
+      padding: 1rem;
+      border-radius: 5px;
+      text-align: center;
+      margin: 2rem 0;
     }
   </style>
 </head>
 <body>
-  <header>
     {{template "header" .}}
-  </header>
   <main>
-    <p>Experience your code in a beautifully designed user interface locally.</p>
-    <p>If you're looking to view and navigate your code without the complexity of a full IDE, you're in the right place!</p>
+    <h1>Welcome to {{.Name}}</h1>
+    <p class="intro">Experience your code in a beautifully designed user interface locally. As a developer or enthusiast, you'll find this platform easy to navigate and perfect for managing your code without the hassle of a full IDE.</p>
+    
+    <div class="cta">
+      <p>Explore your files quickly and effortlessly. Dive in and start exploring now!</p>
+    </div>
+
+    <section id="dirs">
+      <h2>Available Directories</h2>
+      <p>Here are the directories you can browse:</p>
+      {{.Dirs}}
+    </section>
+    
   </main>
 </body>
 </html>

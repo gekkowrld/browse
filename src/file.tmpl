@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.7.45">
   <meta name="description" content="Browse and view local code files with ease.">
-  <title>{{.Title}} (File) | Browse local code locally!</title>
+  <title>{{.Title}} (File) | {{.Tag}}</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
     
@@ -22,14 +22,14 @@
       padding: 1rem;
     }
 
-    pre > code {
+    section#code_d pre > code {
       font-family: "Fira Code", monospace;
       font-optical-sizing: auto;
       font-style: normal;
       padding: 4px;
     }
 
-    pre {
+    section#code_d pre {
       white-space: pre-wrap;       /* css-3 */
       white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
       white-space: -pre-wrap;      /* Opera 4-6 */
@@ -39,6 +39,8 @@
       border: 1px solid #082437;
       width: 90%;
     }
+
+	section#code_d {width: 90%}
 
     #navbar_d {
       background-color: #2c3e50;
@@ -70,7 +72,12 @@
     {{.Navbar}}
   </section>
   <main>
+	<section id="file_meta">
+	<p>{{.Language}} {{.Size}}</p>
+	</section>
+	<section id="code_d">
     {{.Content}}
+	</section>
   </main>
 </body>
 </html>

@@ -22,6 +22,7 @@ var templates embed.FS
 
 type IndexSt struct {
 	Title   string
+	Tag     string
 	Content string
 }
 
@@ -32,17 +33,16 @@ type FileDetail struct {
 	ModTime time.Time
 }
 
+// Code handler
 func Code(w http.ResponseWriter, r *http.Request) {
-	var html_c []byte
-
 	// Set the configuration
-	config = *setConfig()
+	config = *SetConfig()
 
 	navbar = navbarSec(r)
 	// Handle URL path
 	urlPath := r.URL.Path
 	if urlPath == "/code/" {
-		html_c = codeIndex()
+		codeIndex(w, r)
 	} else {
 		var cwd string
 		for _, dir := range config.Directories {
@@ -56,17 +56,11 @@ func Code(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
-		html_c = otherUrls(filepath.Dir(cwd), urlPath)
+		otherUrls(w, r, filepath.Dir(cwd))
 	}
-
-	if html_c == nil {
-		http.Error(w, "Not Found", http.StatusNotFound)
-		return
-	}
-
-	w.Write(html_c)
 }
 
+// Build the navigation bar
 func navbarSec(r *http.Request) string {
 	urlPath := r.URL.Path
 
@@ -101,7 +95,9 @@ func navbarSec(r *http.Request) string {
 	return breadcrumb.String()
 }
 
-func otherUrls(cwd string, urlPath string) []byte {
+// Handle requests for other URLs
+func otherUrls(w http.ResponseWriter, r *http.Request, cwd string) {
+	urlPath := r.URL.Path
 	// Trim the "/code/" prefix from the URL path to get the relative path
 	filePath := strings.TrimPrefix(urlPath, "/code/")
 	fullPath := filepath.Join(cwd, filePath)
@@ -110,42 +106,51 @@ func otherUrls(cwd string, urlPath string) []byte {
 	fileInfo, err := os.Stat(fullPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return NotFound()
+			NotFound(w, r, "The path was not found")
+			return
 		}
 		log.Println(err)
-		return NotFound()
+		InternalError(w, r, "Error accessing the file or directory!")
+		return
 	}
 
 	if fileInfo.IsDir() {
-		return renderDirectory(fullPath, cwd, filePath)
+		renderDirectory(w, r, fullPath, cwd, filePath)
+		return
 	}
 
-	return renderFile(fullPath, filePath)
+	renderFile(w, r, fullPath, filePath)
+	return
 }
 
-func codeIndex() []byte {
+// Generate the index page
+func codeIndex(w http.ResponseWriter, r *http.Request) {
 	data, err := templates.ReadFile("index.tmpl")
 	if err != nil {
 		log.Println(err)
-		return NotFound()
+		InternalError(w, r, "Error reading the index template!")
+		return
 	}
 
 	headerTmplData, err := templates.ReadFile("header.tmpl")
 	if err != nil {
 		log.Println(err)
-		return NotFound()
+		InternalError(w, r, "Error reading the header template!")
+		return
 	}
 
 	tmpl, err := template.New("index").Parse(string(data))
 	if err != nil {
 		log.Println(err)
-		return NotFound()
+		InternalError(w, r, "Error parsing the index template!")
+		return
 	}
 
 	_, err = tmpl.New("header").Parse(string(headerTmplData))
 	if err != nil {
 		log.Println(err)
-		return NotFound()
+		InternalError(w, r, "Error parsing the header template!")
+		return
 	}
 
 	var fid strings.Builder
@@ -155,11 +160,12 @@ func codeIndex() []byte {
 	}
 
 	var buf bytes.Buffer
-	err = tmpl.Execute(&buf, IndexSt{Title: "Code Directories", Content: fid.String()})
+	err = tmpl.Execute(&buf, IndexSt{Title: "Code Directories", Content: fid.String(), Tag: config.Tag})
 	if err != nil {
 		log.Println(err)
-		return NotFound()
+		InternalError(w, r, "Error executing the index template!")
+		return
 	}
 
-	return buf.Bytes()
+	w.Write(buf.Bytes())
 }
