@@ -15,6 +15,7 @@ import (
 )
 
 var navbar string
+var config Config
 
 //go:embed *tmpl
 var templates embed.FS
@@ -34,22 +35,17 @@ type FileDetail struct {
 func Code(w http.ResponseWriter, r *http.Request) {
 	var html_c []byte
 
+	// Set the configuration
+	config = *setConfig()
+
 	navbar = navbarSec(r)
 	// Handle URL path
 	urlPath := r.URL.Path
 	if urlPath == "/code/" {
 		html_c = codeIndex()
 	} else {
-		cfgPath, _ := expandPath("~/.config/browse/config.ini")
-		conf, err := LoadConfig(cfgPath)
-		if err != nil {
-			log.Println(err)
-			w.Write(NotFound())
-			return
-		}
-
 		var cwd string
-		for _, dir := range conf.Directories {
+		for _, dir := range config.Directories {
 			// Get the 'first' part of the path string
 			parts := strings.Split(r.URL.Path, "/")
 			if len(parts) >= 3 {
@@ -152,15 +148,8 @@ func codeIndex() []byte {
 		return NotFound()
 	}
 
-	cfgPath, _ := expandPath("~/.config/browse/config.ini")
-	conf, err := LoadConfig(cfgPath)
-	if err != nil {
-		log.Println(err)
-		return NotFound()
-	}
-
 	var fid strings.Builder
-	for _, file := range conf.Directories {
+	for _, file := range config.Directories {
 		fn := filepath.Base(file)
 		fid.WriteString(fmt.Sprintf(`<p><a href="/code/%s">%s</a> <span>%s</span></p>`, fn, fn, file))
 	}

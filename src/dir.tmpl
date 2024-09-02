@@ -72,8 +72,8 @@ margin: 10px 4px;
   <main>
     <h1>
       {{if ge .Entries 1}}
-        {{.Entries}} {{if gt .Entries 1}}entries{{else}}entry{{end}}
-        {{if ge .Files 1}} ({{.Files}} {{if gt .Files 1}}files{{else}}file{{end}} {{end}}
+        {{.Entries}} {{if gt .Entries 1}}entries{{else}}entry{{end}} (
+        {{if ge .Files 1}} {{.Files}} {{if gt .Files 1}}files{{else}}file{{end}} {{end}}
         {{if ge .Dirs 1}} {{.Dirs}} {{if gt .Dirs 1}}directories{{else}}directory{{end}} {{end}})
 		{{end}}
 	</h1>

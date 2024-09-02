@@ -1,8 +1,6 @@
 package src
 
 import (
-	"fmt"
-	"github.com/go-ini/ini"
 	"log"
 	"os"
 	"path/filepath"
@@ -10,11 +8,6 @@ import (
 	"strings"
 	"unicode/utf8"
 )
-
-type Config struct {
-	Directories   []string `ini:"dirs"`
-	PreferredName string   `ini:"preferred_name"`
-}
 
 // Expand user directory (e.g., "~")
 func expandPath(path string) (string, error) {
@@ -35,65 +28,6 @@ func resolvePath(path string) (string, error) {
 		return "", err
 	}
 	return absPath, nil
-}
-
-func LoadConfig(filename string) (*Config, error) {
-	cfg, err := ini.Load(filename)
-	if err != nil {
-		return nil, err
-	}
-
-	var config Config
-	err = cfg.Section("directories").MapTo(&config)
-	if err != nil {
-		return nil, err
-	}
-
-	err = cfg.Section("settings").MapTo(&config)
-	if err != nil {
-		return nil, err
-	}
-
-	// Check for '*' first
-	var cdirs []string
-	for _, dir := range config.Directories {
-		if strings.HasSuffix(dir, "*") {
-			expandedPath, err := expandPath(filepath.Dir(dir))
-			if err != nil {
-				return nil, err
-			}
-
-			dirs, err := os.ReadDir(expandedPath)
-			if err != nil {
-				return nil, err
-			}
-
-			for _, dir_s := range dirs {
-				cdirs = append(cdirs, fmt.Sprintf("%s/%s", filepath.Dir(dir), dir_s.Name()))
-			}
-		} else {
-			cdirs = append(cdirs, dir)
-		}
-	}
-
-	config.Directories = uniqueSortedEntries(cdirs)
-
-	// Expand and resolve directories
-	var expandedDirs []string
-	for _, dir := range config.Directories {
-		expandedPath, err := expandPath(dir)
-		if err != nil {
-			return nil, err
-		}
-		resolvedPath, err := resolvePath(expandedPath)
-		if err != nil {
-			return nil, err
-		}
-		expandedDirs = append(expandedDirs, resolvedPath)
-	}
-	config.Directories = expandedDirs
-
-	return &config, nil
 }
 
 func uniqueSortedEntries(arr []string) []string {

@@ -132,14 +132,7 @@ func displayPage(results []QueryRes) string {
 }
 
 func getQuery(query string) []QueryRes {
-	cfgPath, _ := expandPath("~/.config/browse/config.ini")
-	conf, err := LoadConfig(cfgPath)
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-
-	dirs := conf.Directories
+	dirs := config.Directories
 	if strings.Contains(query, "dir") {
 		re := regexp.MustCompile(`(?m)dir:(\w+)`)
 		matches := re.FindStringSubmatch(query)
