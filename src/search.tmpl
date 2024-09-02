@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.7.45">
+  <title>Search for "{{.For}}" | Explore Your Code Locally</title>
+  <style>
+    body {
+      line-height: 1.6;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+      color: #333;
+      font-family: Arial, sans-serif;
+    }
+    header {
+      background-color: #222;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    main {
+      padding: 1rem;
+    }
+    .results-summary {
+      background: #e0f7fa;
+      border: 1px solid #b2ebf2;
+      border-radius: 4px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .results-summary p {
+      margin: 0;
+      font-size: 1rem;
+      color: #00796b;
+    }
+    .search-result {
+      background: #111d2f;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1rem;
+      padding: 1rem;
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    .search-result a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .search-result a:hover {
+      text-decoration: underline;
+    }
+    .replace_str {
+      background-color: #ffc107;
+      color: #333;
+      padding: 0 0.2rem;
+      border-radius: 3px;
+    }
+    .no_result {
+      background: #0f1016;
+      border: 1px solid #f59e0b;
+      border-left: 2.7rem solid #f59e0b;
+      border-radius: 4px;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.2rem;
+      color: #ea5656;
+    }
+    .no_ress {
+      color: #40ba12;
+    }
+    #pagination a {
+      text-decoration: none;
+      color: #007bff;
+      margin: 0 0.5rem;
+    }
+    #pagination a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Search Results for "{{.For}}"</h1>
+    {{template "header" .}}
+  </header>
+  <main>
+    {{if .IsRes}}
+      <div class="results-summary">
+        <p><strong>{{.ResLen}}</strong> result{{if gt .ResLen 1}}s{{end}} found in <strong>{{.Time}}</strong></p>
+      </div>
+    {{else}}
+      <div class="no_result">
+        <p>The query for '<strong class="no_ress">{{.For}}</strong>' was not found</p>
+      </div>
+    {{end}}
+    {{.Results}}
+  </main>
+  <section id="pagination">
+    {{if gt .Pages 1}}
+      {{if gt .CurrentPage 1}}
+        <a href="{{.HFirst}}">First</a>
+        <a href="{{.HPrev}}">Previous</a>
+      {{end}}
+      <a href="{{.HPage}}">{{.CurrentPage}}</a>
+      {{if lt .CurrentPage .Pages}}
+        <a href="{{.HNext}}">Next</a>
+        <a href="{{.HLast}}">Last</a>
+      {{end}}
+    {{end}}
+  </section>
+</body>
+</html>
+

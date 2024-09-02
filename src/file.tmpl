@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.7.45">
+  <meta name="description" content="Browse and view local code files with ease.">
+  <title>{{.Title}} (File) | Browse local code locally!</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
+    
+    body {
+      background-color: #0c1a24;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    pre > code {
+      font-family: "Fira Code", monospace;
+      font-optical-sizing: auto;
+      font-style: normal;
+      padding: 4px;
+    }
+
+    pre {
+      white-space: pre-wrap;       /* css-3 */
+      white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+      white-space: -pre-wrap;      /* Opera 4-6 */
+      white-space: -o-pre-wrap;    /* Opera 7 */
+      word-wrap: break-word;       /* Internet Explorer 5.5+ */
+      border-radius: 6px;
+      border: 1px solid #082437;
+      width: 90%;
+    }
+
+    #navbar_d {
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      margin: 1rem;
+      font-size: 1.4rem;
+    }
+
+    #navbar_d a {
+      color: #1abc9c;
+      text-decoration: none;
+      padding: 0 0.5rem;
+    }
+
+    #navbar_d a:hover {
+      text-decoration: underline;
+    }
+
+    #navbar_d span {
+      color: #bdc3c7;
+    }
+  </style>
+</head>
+<body>
+  {{template "header" .}}
+  <section id="navbar_d">
+    {{.Navbar}}
+  </section>
+  <main>
+    {{.Content}}
+  </main>
+</body>
+</html>
+

@@ -1,0 +1,75 @@
+ <style>
+  @import url('https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap');
+
+  body {
+    font-family: "SUSE", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    background-color: #030c12;
+    color: #b3bcc2;
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    background-color: #1c2331;
+    padding: 20px;
+    text-align: center;
+  }
+
+  header a {
+    color: #b3bcc2;
+    text-decoration: none;
+    margin: 0 15px;
+    font-size: 1.2em;
+  }
+
+  header a:focus,
+  header a:hover {
+    color: #f0f0f0;
+    outline: 2px solid #f0f0f0;
+    outline-offset: 2px;
+  }
+
+  header a:active {
+    color: #d1d1d1;
+  }
+
+  form {
+    display: inline-block;
+    margin-top: 10px;
+  }
+
+  input[type="text"] {
+    padding: 10px;
+    border: 2px solid #4a5a6b;
+    border-radius: 25px;
+    background-color: #1f2a38;
+    color: #b3bcc2;
+    font-size: 1em;
+    width: 250px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  input[type="text"]::placeholder {
+    color: #6c747e;
+  }
+
+  input[type="text"]:focus {
+    border-color: #6c747e;
+    outline: none;
+    box-shadow: 0 0 8px rgba(108, 116, 125, 0.5);
+  }
+</style>
+
+<header>
+  <nav>
+    <a href="/">Home</a>
+    <a href="/code">Code</a>
+  </nav>
+  <form method="get" action="/search">
+    <input name="query" type="text" placeholder="Search...">
+  </form>
+</header>
+ 

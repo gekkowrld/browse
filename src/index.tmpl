@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.7.45">
+  <title>{{.Title}} | Browse local code locally!</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=SUSE:wght@100..800&display=swap');
+
+    body {
+      font-family: "SUSE", sans-serif;
+      font-optical-sizing: auto;
+      font-style: normal;
+      background-color: #030c12;
+      color: #b3bcc2;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #1c2331;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header a {
+      color: #b3bcc2;
+      text-decoration: none;
+      margin: 0 15px;
+      font-size: 1.2em;
+    }
+
+    header a:focus,
+    header a:hover {
+      color: #f0f0f0;
+      outline: 2px solid #f0f0f0;
+      outline-offset: 2px;
+    }
+
+    header a:active {
+      color: #d1d1d1;
+    }
+
+    main {
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    p {
+      margin-bottom: 1.5em;
+      line-height: 1.6;
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #1c2331; /* Slightly lighter background for contrast */
+		display: flex;
+		justify-content: space-around;
+    }
+
+    p:nth-of-type(odd) {
+      background-color: #2a2d36; /* Alternate background color */
+    }
+
+    p:nth-of-type(even) {
+      background-color: #1c2331; /* Alternate background color */
+    }
+
+    p + p {
+      border-top: 1px solid #2a2d36; /* Divider line between paragraphs */
+    }
+
+    a {
+      color: #1e90ff;
+      text-decoration: underline;
+    }
+
+    a:focus,
+    a:hover {
+      color: #ff6347;
+      outline: 2px solid #ff6347;
+      outline-offset: 2px;
+    }
+
+    a:active {
+      color: #ff4500;
+    }
+  </style>
+</head>
+<body>
+  {{template "header" .}}
+  <main>
+    {{.Content}}
+  </main>
+</body>
+</html>
+
