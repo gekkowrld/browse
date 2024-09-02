@@ -209,7 +209,7 @@ func walkDir(dir, query string) []QueryRes {
 }
 
 func searchFile(relpath, file, query string) ([]QueryRes, error) {
-	if isBinary, _ := isBinary(file); isBinary {
+	if isBinary := isBinary(file); isBinary {
 		return nil, fmt.Errorf("file is a binary")
 	}
 
