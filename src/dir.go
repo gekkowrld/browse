@@ -123,7 +123,7 @@ func renderDirectory(w http.ResponseWriter, r *http.Request, dirPath, cwd, relat
 <div class="f-entry">
 <p><span>%s<a href="/code/%s">%s</a></span> <span>%s</span>  <span>%s</span></p>
 </div>
-`, dirIcon, dir.path, dir.name, dir.size, dir.mod))
+`, dirIcon, dir.path, trimName(dir.name, 70), dir.size, dir.mod))
 	}
 
 	for _, fi := range filesIn {
@@ -131,7 +131,7 @@ func renderDirectory(w http.ResponseWriter, r *http.Request, dirPath, cwd, relat
 <div class="f-entry">
 <p><span>%s<a href="/code/%s">%s</a></span> <span>%s</span>  <span>%s</span></p>
 </div>
-`, fileIcon, fi.path, fi.name, fi.size, fi.mod))
+`, fileIcon, fi.path, trimName(fi.name, 70), fi.size, fi.mod))
 	}
 
 	if dmd {

@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.7.45">
+  <meta name="generator" content=
+  "HTML Tidy for HTML5 for Linux version 5.7.45">
   <title>Search for "{{.For}}" | Explore Your Code Locally</title>
   <style>
     body {
@@ -78,46 +79,55 @@
     .no_ress {
       color: #40ba12;
     }
-    #pagination a {
-      text-decoration: none;
-      color: #007bff;
-      margin: 0 0.5rem;
-    }
+        #pagination {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+
     #pagination a:hover {
       text-decoration: underline;
     }
+        #pagination a{
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            margin: 0 5px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+            background-color: #f5f5f5;
+            font-size: 1rem;
+        }
+        #pagination .current {
+            background-color: #333;
+            color: #fff;
+            border-color: #333;
+        }
   </style>
 </head>
 <body>
   <header>
-    <h1>Search Results for "{{.For}}"</h1>
-    {{template "header" .}}
+    <h1>Search Results for "{{.For}}"</h1>{{template "header" .}}
   </header>
   <main>
     {{if .IsRes}}
-      <div class="results-summary">
-        <p><strong>{{.ResLen}}</strong> result{{if gt .ResLen 1}}s{{end}} found in <strong>{{.Time}}</strong></p>
-      </div>
-    {{else}}
-      <div class="no_result">
-        <p>The query for '<strong class="no_ress">{{.For}}</strong>' was not found</p>
-      </div>
-    {{end}}
-    {{.Results}}
+    <div class="results-summary">
+      <p><strong>{{.ResLen}}</strong> result{{if gt .ResLen
+      1}}s{{end}} found in <strong>{{.Time}}</strong></p>
+    </div>{{else}}
+    <div class="no_result">
+      <p>The query for '<strong class="no_ress">{{.For}}</strong>'
+      was not found</p>
+    </div>{{end}} {{.Results}}
   </main>
   <section id="pagination">
-    {{if gt .Pages 1}}
-      {{if gt .CurrentPage 1}}
-        <a href="{{.HFirst}}">First</a>
-        <a href="{{.HPrev}}">Previous</a>
-      {{end}}
-      <a href="{{.HPage}}">{{.CurrentPage}}</a>
-      {{if lt .CurrentPage .Pages}}
-        <a href="{{.HNext}}">Next</a>
-        <a href="{{.HLast}}">Last</a>
-      {{end}}
-    {{end}}
+    {{if gt .Pages 1}} {{if gt .CurrentPage 1}} <a href=
+    "{{.HFirst}}">First</a> <a href="{{.HPrev}}">Previous</a>
+    {{end}} <a href="{{.HPage}}">{{.CurrentPage}}</a> {{if lt
+    .CurrentPage .Pages}} <a href="{{.HNext}}">Next</a> <a href=
+    "{{.HLast}}">Last</a> {{end}} {{end}}
   </section>
 </body>
 </html>
-

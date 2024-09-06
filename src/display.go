@@ -156,7 +156,7 @@ func codeIndex(w http.ResponseWriter, r *http.Request) {
 	var fid strings.Builder
 	for _, file := range config.Directories {
 		fn := filepath.Base(file)
-		fid.WriteString(fmt.Sprintf(`<p><a href="/code/%s">%s</a> <span>%s</span></p>`, fn, fn, file))
+		fid.WriteString(fmt.Sprintf(`<p><a href="/code/%s">%s</a> <span>%s</span></p>`, fn, trimName(fn, 15), trimName(file, 30, true)))
 	}
 
 	var buf bytes.Buffer

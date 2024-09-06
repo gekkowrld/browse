@@ -1,6 +1,7 @@
 package src
 
 import (
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -51,26 +52,35 @@ func uniqueSortedEntries(arr []string) []string {
 	return uniqueSlice
 }
 
-var viewableFiles = map[string]bool{
-	".jpg":  true,
-	".jpeg": true,
-	".png":  true,
-	".gif":  true,
-	".bmp":  true,
-	".svg":  true,
-	".webp": true,
-	".pdf":  true,
-	".mp3":  true,
-	".wav":  true,
-	".mp4":  true,
-	".webm": true,
-	".ogg":  true,
-	".ico":  true,
+// File extensions and their types (html element?)
+// that can be displayed by `most` modern browsers
+var viewableFiles = map[string]string{
+	".jpg":  "img",
+	".jpeg": "img",
+	".png":  "img",
+	".gif":  "img",
+	".bmp":  "img",
+	".svg":  "img",
+	".webp": "img",
+	".pdf":  "pdf",
+	".mp3":  "audio",
+	".wav":  "audio",
+	".mp4":  "video",
+	".webm": "video",
+	".ogg":  "audio",
+	".ico":  "img",
+	".tiff": "img",
+	".avif": "img",
+	".mpeg": "video",
+	".mov":  "video",
+	".avi":  "video",
+	".ts":   "video",
 }
 
-func isViewableInBrowser(filename string) bool {
+func isViewableInBrowser(filename string) (string, bool) {
 	extension := strings.ToLower(filepath.Ext(filename))
-	return viewableFiles[extension]
+	media, ok := viewableFiles[extension]
+	return media, ok
 }
 
 func cFilesWithDetails(dir string) []FileDetail {
@@ -126,40 +136,79 @@ func cFiles(dir string) map[string]bool {
 	return lis
 }
 
+// isBinary determines if a file at the given path is binary or text.
 func isBinary(filePath string) bool {
-	// Code from:
-	//		https://cs.opensource.google/go/x/tools/+refs/tags/v0.24:godoc/util/util.go:l=69
 	file, err := os.Open(filePath)
 	if err != nil {
 		return true
 	}
 	defer file.Close()
 
-	var buf [1024]byte
-	n, err := file.Read(buf[0:])
-	if err != nil {
+	const maxBufSize = 1024
+	buf := make([]byte, maxBufSize)
+
+	n, err := file.Read(buf)
+	if err != nil && err != io.EOF {
 		return true
 	}
 
-	return !isText(buf[0:n])
+	return !isText(buf[:n])
 }
 
-func isText(buf []byte) bool {
-	// Code from:
-	//		https://cs.opensource.google/go/x/tools/+refs/tags/v0.24:godoc/util/util.go:l=40
-	const bMax = 1024
-	if len(buf) > bMax {
-		buf = buf[0:bMax]
+// isText checks if the given byte slice contains only text (not binary).
+// From: https://cs.opensource.google/go/x/tools/+/refs/tags/v0.24.0:godoc/util/util.go;l=40
+func isText(s []byte) bool {
+	const max = 1024 // at least utf8.UTFMax
+	if len(s) > max {
+		s = s[0:max]
 	}
-
-	for i, c := range string(buf) {
-		if i+utf8.UTFMax > len(buf) {
+	for i, c := range string(s) {
+		if i+utf8.UTFMax > len(s) {
+			// last char may be incomplete - ignore
 			break
 		}
-
-		if c == 0xFFFD || c < ' ' && c != '\n' && c != '\t' && c != '\f' {
+		if c == 0xFFFD || c < ' ' && c != '\n' && c != '\t' && c != '\f' && c != '\v' && c != '\r' && c != '\b' {
+			// decoding error or control character - not a text file
 			return false
 		}
 	}
 	return true
+}
+
+func trimName(name string, at int, end ...bool) string {
+	str_len := len(name)
+	if str_len < at {
+		return name
+	}
+
+	var dispEnd bool
+	if len(end) >= 1 {
+		dispEnd = end[0]
+	}
+
+	var ending string = "..."
+	if dispEnd {
+		// reverse
+		name = rev(name)
+		cutStr := name[:at]
+		return ending + rev(cutStr)
+	}
+	return name[:at] + ending
+}
+
+// From: https://stackoverflow.com/questions/1752414/how-to-reverse-a-string-in-go/1754209#1754209
+func rev(input string) string {
+	n := 0
+	rune := make([]rune, len(input))
+	for _, r := range input {
+		rune[n] = r
+		n++
+	}
+	rune = rune[0:n]
+	// Reverse
+	for i := 0; i < n/2; i++ {
+		rune[i], rune[n-1-i] = rune[n-1-i], rune[i]
+	}
+	// Convert back to UTF-8.
+	return string(rune)
 }

@@ -19,6 +19,7 @@ func main() {
 	open_at := fmt.Sprintf("%s:%d", strings.TrimSuffix(host, ":"), port)
 	http.HandleFunc("/", src.Home)
 	http.HandleFunc("/code/", src.Code)
+	http.HandleFunc("/media/", src.Media)
 	http.HandleFunc("/search", src.Search)
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.Write(favicon)

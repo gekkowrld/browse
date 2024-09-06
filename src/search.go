@@ -133,7 +133,10 @@ func displayPage(results []QueryRes) string {
 }
 
 func getQuery(query string) []QueryRes {
-	dirs := config.Directories
+	if strings.TrimSpace(query) == "" {
+		return []QueryRes{}
+	}
+	dirs := SetConfig().Directories
 	if strings.Contains(query, "dir") {
 		re := regexp.MustCompile(`(?m)dir:(\w+)`)
 		matches := re.FindStringSubmatch(query)
@@ -145,13 +148,23 @@ func getQuery(query string) []QueryRes {
 		}
 	}
 
+	ext_ := regexp.MustCompile(`(?m)ext:([\w.]+)`)
 	var results []QueryRes
 	var wg sync.WaitGroup
 	for _, dir := range dirs {
 		wg.Add(1)
 		go func(d string) {
 			defer wg.Done()
-			res := walkDir(d, query)
+			var ext_s string
+			if strings.Contains(query, "ext") {
+				matches := ext_.FindStringSubmatch(query)
+				if len(matches) > 1 {
+					ext_s = matches[1]
+					query = ext_.ReplaceAllString(query, "")
+					query = strings.TrimSpace(query)
+				}
+			}
+			res := walkDir(ext_s, d, query)
 			if res != nil {
 				mutex.Lock()
 				results = append(results, res...)
@@ -175,7 +188,7 @@ func filterDirsByMatch(dirs []string, match string) []string {
 
 var mutex sync.Mutex
 
-func walkDir(dir, query string) []QueryRes {
+func walkDir(ext, dir, query string) []QueryRes {
 	var results []QueryRes
 	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
@@ -187,6 +200,17 @@ func walkDir(dir, query string) []QueryRes {
 		if !d.IsDir() {
 			relPath, _ := filepath.Rel(dir, path)
 			relPath = filepath.Join(filepath.Base(dir), relPath)
+
+			fext := filepath.Ext(relPath)
+			//	fmt.Println(fext, "sys--user", ext)
+			if len(ext) > 1 && !strings.HasPrefix(ext, ".") {
+				ext = "." + ext
+			}
+
+			// Compare file extension
+			if len(ext) > 1 && fext != ext {
+				return nil
+			}
 			res, err := searchFile(relPath, path, query)
 			if err == nil && len(res) > 0 {
 				mutex.Lock()

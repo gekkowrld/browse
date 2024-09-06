@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="generator" content="HTML Tidy for HTML5 for Linux version 5.7.45">
+  <meta name="viewport" content=
+  "width=device-width, initial-scale=1.0">
+  <meta name="generator" content=
+  "HTML Tidy for HTML5 for Linux version 5.7.45">
   <title>{{.Name}} | {{.Tag}}</title>
   <style>
     body {
@@ -59,22 +61,21 @@
   </style>
 </head>
 <body>
-    {{template "header" .}}
+  {{template "header" .}}
   <main>
     <h1>Welcome to {{.Name}}</h1>
-    <p class="intro">Experience your code in a beautifully designed user interface locally. As a developer or enthusiast, you'll find this platform easy to navigate and perfect for managing your code without the hassle of a full IDE.</p>
-    
+    <p class="intro">Experience your code in a beautifully designed
+    user interface locally. As a developer or enthusiast, you'll
+    find this platform easy to navigate and perfect for managing
+    your code without the hassle of a full IDE.</p>
     <div class="cta">
-      <p>Explore your files quickly and effortlessly. Dive in and start exploring now!</p>
+      <p>Explore your files quickly and effortlessly. Dive in and
+      start exploring now!</p>
     </div>
-
     <section id="dirs">
       <h2>Available Directories</h2>
-      <p>Here are the directories you can browse:</p>
-      {{.Dirs}}
+      <p>Here are the directories you can browse:</p>{{.Dirs}}
     </section>
-    
   </main>
 </body>
 </html>
-

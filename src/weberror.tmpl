@@ -1,46 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>{{.Error}} ({{.Name}})| {{.Tag}}</title>
-<style>
-main {
-	width: 100%;
-	display: grid;
-	place-items: center;
-}
-.err_disp {
-	width: 70%;
-	display: grid;
-	place-items: center;
-	border: 2px double #4a5a6b;
-	border-radius: 7px;
-	margin-top: 3rem;
-	padding: 1rem;
-	background-color: #1c2331;
-color: #ea5656;
-}
-a.err_code {
-background-color: #163323;
-color: white;
-padding: 0.7em;
-border-radius: 5px;
-}
-p.err_help {
-	color: #9fa223;
-}
-</style>
+  <meta name="generator" content=
+  "HTML Tidy for HTML5 for Linux version 5.7.45">
+  <meta charset="UTF-8">
+  <title>{{.Error}} ({{.Name}})| {{.Tag}}</title>
+  <style>
+  main {
+        width: 100%;
+        display: grid;
+        place-items: center;
+  }
+  .err_disp {
+        width: 70%;
+        display: grid;
+        place-items: center;
+        border: 2px double #4a5a6b;
+        border-radius: 7px;
+        margin-top: 3rem;
+        padding: 1rem;
+        background-color: #1c2331;
+  color: #ea5656;
+  }
+  a.err_code {
+  background-color: #163323;
+  color: white;
+  padding: 0.7em;
+  border-radius: 5px;
+  }
+  p.err_help {
+        color: #9fa223;
+  }
+  </style>
 </head>
 <body>
-	{{template "header" .}}
-	<main>
-	<div class="err_disp">
-		<!-- Thanks to MDN sequential error code pages, naively construct the URL! -->
-		<p>{{.Error}} <a class="err_code" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/{{.ErrorCode}}">(Error code: {{.ErrorCode}})</a></p>
-		<p>{{.Reason}}</p>
-		<p>-> {{.URL}}</p>
-		<p class="err_help">{{.Help}}</p>
-</div>
-	</main>
+  {{template "header" .}}
+  <main>
+    <div class="err_disp">
+      <!-- Thanks to MDN sequential error code pages, naively construct the URL! -->
+      <p>{{.Error}} <a class="err_code" href=
+      "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/{{.ErrorCode}}">
+      (Error code: {{.ErrorCode}})</a></p>
+      <p>{{.Reason}}</p>
+      <p>-&gt; {{.URL}}</p>
+      <p class="err_help">{{.Help}}</p>
+    </div>
+  </main>
 </body>
 </html>
