@@ -1,4 +1,4 @@
-package src
+package disp
 
 import (
 	"bytes"
@@ -23,29 +23,6 @@ var (
 	tmplHeader *template.Template
 )
 
-func init() {
-	var err error
-	fileTmplData, err := templates.ReadFile("weberror.tmpl")
-	if err != nil {
-		log.Fatal("Error reading weberror.tmpl: ", err)
-	}
-
-	headerTmplData, err := templates.ReadFile("header.tmpl")
-	if err != nil {
-		log.Fatal("Error reading header.tmpl: ", err)
-	}
-
-	tmplError, err = template.New("weberror").Parse(string(fileTmplData))
-	if err != nil {
-		log.Fatal("Error parsing weberror.tmpl: ", err)
-	}
-
-	tmplHeader, err = tmplError.New("header").Parse(string(headerTmplData))
-	if err != nil {
-		log.Fatal("Error parsing header.tmpl: ", err)
-	}
-}
-
 func NotFound(w http.ResponseWriter, r *http.Request, reason string) {
 	Error(w, r, http.StatusNotFound, reason)
 }
@@ -59,14 +36,14 @@ func Error(w http.ResponseWriter, r *http.Request, status int, reason string) {
 	w.WriteHeader(status)
 
 	// Read and parse the template files
-	fileTmplData, err := templates.ReadFile("weberror.tmpl")
+	fileTmplData, err := templates.ReadFile("templates/weberror.tmpl")
 	if err != nil {
 		log.Println("Error reading weberror.tmpl: ", err)
 		fatalError(w, r)
 		return
 	}
 
-	headerTmplData, err := templates.ReadFile("header.tmpl")
+	headerTmplData, err := templates.ReadFile("templates/header.tmpl")
 	if err != nil {
 		log.Println("Error reading header.tmpl: ", err)
 		fatalError(w, r)
@@ -114,21 +91,23 @@ func Error(w http.ResponseWriter, r *http.Request, status int, reason string) {
 // fatalError is a last resort for when error templates fail
 // fatalError handles critical errors that occur when error templates fail.
 func fatalError(w http.ResponseWriter, r *http.Request) {
-	// Construct the error page HTML
 	errStr := fmt.Sprintf(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fatal Error</title>
+    <title>Oops!</title>
     <style>
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
         body {
             color: #fff;
             background-color: #f44336;
-            font-family: Arial, sans-serif;
             text-align: center;
             padding: 50px;
+  			font-family: "Kanit", sans-serif;
+			font-weight: 400;
+			font-style: normal;
         }
         h1 {
             color: #fff;
@@ -136,17 +115,16 @@ func fatalError(w http.ResponseWriter, r *http.Request) {
     </style>
 </head>
 <body>
-    <h1>Fatal Error</h1>
-    <p>A critical error occurred while processing your request.</p>
-	<p>A meaningful error could not be displayed, sorry for that :(</p>
-	<p>Don't worry, go back to <a href="/">Home</a> and try your luck!</p>
+    <h1>Something Went Hooooribly Wrong</h1>
+    <p>We encountered an issue while processing your request.</p>
+    <p>Unfortunately, we couldn't display a detailed error message. Please try again later.</p>
+    <p>Feel free to return to the <a href="/">Home</a> page and continue browsing.</p>
     <p>URL: %s</p>
 </body>
 </html>
 `, r.URL.String())
 
-	// Set the content type to HTML and write the error page to the response
 	w.Header().Set("Content-Type", "text/html")
-	w.WriteHeader(http.StatusInternalServerError) // Set appropriate HTTP status code
+	w.WriteHeader(http.StatusInternalServerError)
 	w.Write([]byte(errStr))
 }

@@ -1,4 +1,4 @@
-package src
+package disp
 
 import (
 	"bytes"
@@ -23,31 +23,31 @@ func Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := templates.ReadFile("home.tmpl")
+	data, err := templates.ReadFile("templates/home.tmpl")
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		InternalError(w, r, "home template not found")
 		return
 	}
 
-	headerTmplData, err := templates.ReadFile("header.tmpl")
+	headerTmplData, err := templates.ReadFile("templates/header.tmpl")
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		InternalError(w, r, "header template not found")
 		return
 	}
 
 	tmpl, err := template.New("index").Parse(string(data))
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		InternalError(w, r, "error parsing index template")
 		return
 	}
 
 	_, err = tmpl.New("header").Parse(string(headerTmplData))
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		InternalError(w, r, "error parsing header template")
 		return
 	}
 
@@ -61,7 +61,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.ExecuteTemplate(&buf, "index", HomeSt{Name: config.Name, Tag: config.Tag, Dirs: fid.String()})
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		InternalError(w, r, "error executing the template to display the homepage properly")
 		return
 	}
 

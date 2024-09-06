@@ -1,7 +1,8 @@
-package src
+package disp
 
 import (
 	"cmp"
+	"codeberg.org/gekkowrld/browse/src"
 	"fmt"
 	"github.com/go-ini/ini"
 	"os"
@@ -20,7 +21,7 @@ type Config struct {
 func SetConfig() *Config {
 	config_dir, err := os.UserConfigDir()
 	if err != nil {
-		config_dir, _ = expandPath("~/.config/")
+		config_dir, _ = src.ExpandPath("~/.config/")
 	}
 
 	// Set the defaults
@@ -46,7 +47,7 @@ func SetConfig() *Config {
 	var cdirs []string
 	for _, dir := range cfg2.Directories {
 		if strings.HasSuffix(dir, "*") {
-			expandedPath, err := expandPath(filepath.Dir(dir))
+			expandedPath, err := src.ExpandPath(filepath.Dir(dir))
 			if err != nil {
 				return &cfg
 			}
@@ -64,16 +65,16 @@ func SetConfig() *Config {
 		}
 	}
 
-	cfg2.Directories = uniqueSortedEntries(cdirs)
+	cfg2.Directories = src.UniqueSortedEntries(cdirs)
 
 	// Expand and resolve directories
 	var expandedDirs []string
 	for _, dir := range cfg2.Directories {
-		expandedPath, err := expandPath(dir)
+		expandedPath, err := src.ExpandPath(dir)
 		if err != nil {
 			return &cfg
 		}
-		resolvedPath, err := resolvePath(expandedPath)
+		resolvedPath, err := src.ResolvePath(expandedPath)
 		if err != nil {
 			return &cfg
 		}

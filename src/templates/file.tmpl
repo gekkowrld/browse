@@ -55,6 +55,18 @@
       font-size: 1.4rem;
     }
 
+  .binary_disp{
+  margin-top: 2rem;
+      background: #0f1016;
+      border: 1px solid #f59e0b;
+      border-left: 2.7rem solid #f59e0b;
+      border-radius: 4px;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.2rem;
+      color: #ea5656;
+  }
+
     #navbar_d a {
       color: #1abc9c;
       text-decoration: none;
@@ -117,7 +129,10 @@
       1}}line{{else}}lines{{end}}</p>
     </section>
     <section id="code_d">
-      {{.Content}}
+      {{if .IsBinary}}
+      <div class="binary_disp">
+        <p>{{.Binary}}</p>
+      </div>{{else}} {{.Content}} {{end}}
     </section>{{else}}
     <section id="media_d">
       {{.Media}}

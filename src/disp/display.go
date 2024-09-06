@@ -1,7 +1,8 @@
-package src
+package disp
 
 import (
 	"bytes"
+	"codeberg.org/gekkowrld/browse/src"
 	"embed"
 	"fmt"
 	ghtml "html"
@@ -17,8 +18,7 @@ import (
 var navbar string
 var config Config
 
-//go:embed *tmpl
-var templates embed.FS
+var templates embed.FS = src.Templates
 
 type IndexSt struct {
 	Title   string
@@ -125,14 +125,14 @@ func otherUrls(w http.ResponseWriter, r *http.Request, cwd string) {
 
 // Generate the index page
 func codeIndex(w http.ResponseWriter, r *http.Request) {
-	data, err := templates.ReadFile("index.tmpl")
+	data, err := templates.ReadFile("templates/index.tmpl")
 	if err != nil {
 		log.Println(err)
 		InternalError(w, r, "Error reading the index template!")
 		return
 	}
 
-	headerTmplData, err := templates.ReadFile("header.tmpl")
+	headerTmplData, err := templates.ReadFile("templates/header.tmpl")
 	if err != nil {
 		log.Println(err)
 		InternalError(w, r, "Error reading the header template!")
@@ -156,7 +156,7 @@ func codeIndex(w http.ResponseWriter, r *http.Request) {
 	var fid strings.Builder
 	for _, file := range config.Directories {
 		fn := filepath.Base(file)
-		fid.WriteString(fmt.Sprintf(`<p><a href="/code/%s">%s</a> <span>%s</span></p>`, fn, trimName(fn, 15), trimName(file, 30, true)))
+		fid.WriteString(fmt.Sprintf(`<p><a href="/code/%s">%s</a> <span>%s</span></p>`, fn, src.TrimText(fn, 15), src.TrimText(file, 30, true)))
 	}
 
 	var buf bytes.Buffer

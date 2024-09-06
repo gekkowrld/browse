@@ -1,7 +1,8 @@
-package src
+package disp
 
 import (
 	"bytes"
+	"codeberg.org/gekkowrld/browse/src"
 	"fmt"
 	"github.com/alecthomas/chroma/v2"
 	"github.com/alecthomas/chroma/v2/formatters/html"
@@ -26,18 +27,23 @@ type FileSt struct {
 	Lines    int
 	Text     bool
 	Media    string
+	IsBinary bool
+	Binary   string
 }
 
 func renderFile(w http.ResponseWriter, r *http.Request, filename, relpath string) {
 	var fileContent []byte
 	var err error
 	var fileSize int
-	isb := isBinary(filename)
+	isb := src.IsBinary(filename)
 
 	if isb {
-		media_type, ok := isViewableInBrowser(filename)
+		media_type, ok := src.IsViewableInBrowser(filename)
 		if !ok {
-			fileContent = []byte("The file is a binary file, can't display it")
+			fileContent = []byte("The file is in binary format, so it's not really something we can display directly.")
+			file, _ := os.Open(filename)
+			fstat, _ := file.Stat()
+			fileSize = int(fstat.Size())
 		} else {
 			if media_type == "pdf" {
 				renderMedia(media_type, filename, w, r)
@@ -86,14 +92,14 @@ func renderFile(w http.ResponseWriter, r *http.Request, filename, relpath string
 		return
 	}
 
-	fileTmplData, err := templates.ReadFile("file.tmpl")
+	fileTmplData, err := templates.ReadFile("templates/file.tmpl")
 	if err != nil {
 		log.Println(err)
 		InternalError(w, r, "Error reading the file template")
 		return
 	}
 
-	headerTmplData, err := templates.ReadFile("header.tmpl")
+	headerTmplData, err := templates.ReadFile("templates/header.tmpl")
 	if err != nil {
 		log.Println(err)
 		InternalError(w, r, "Error reading the header template")
@@ -131,6 +137,8 @@ func renderFile(w http.ResponseWriter, r *http.Request, filename, relpath string
 		Size:     gm.Bytes(uint64(fileSize)),
 		Lines:    iterLen,
 		Text:     true,
+		IsBinary: isb,
+		Binary:   string(fileContent),
 	})
 	if err != nil {
 		log.Println(err)

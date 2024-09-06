@@ -2,7 +2,6 @@ package src
 
 import (
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -11,7 +10,7 @@ import (
 )
 
 // Expand user directory (e.g., "~")
-func expandPath(path string) (string, error) {
+func ExpandPath(path string) (string, error) {
 	if strings.HasPrefix(path, "~/") {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
@@ -23,7 +22,7 @@ func expandPath(path string) (string, error) {
 }
 
 // Resolve relative paths to absolute paths
-func resolvePath(path string) (string, error) {
+func ResolvePath(path string) (string, error) {
 	absPath, err := filepath.Abs(path)
 	if err != nil {
 		return "", err
@@ -31,7 +30,7 @@ func resolvePath(path string) (string, error) {
 	return absPath, nil
 }
 
-func uniqueSortedEntries(arr []string) []string {
+func UniqueSortedEntries(arr []string) []string {
 	// Create a map to store unique entries
 	uniqueMap := make(map[string]struct{})
 
@@ -77,67 +76,14 @@ var viewableFiles = map[string]string{
 	".ts":   "video",
 }
 
-func isViewableInBrowser(filename string) (string, bool) {
+func IsViewableInBrowser(filename string) (string, bool) {
 	extension := strings.ToLower(filepath.Ext(filename))
 	media, ok := viewableFiles[extension]
 	return media, ok
 }
 
-func cFilesWithDetails(dir string) []FileDetail {
-	var details []FileDetail
-	files, err := os.ReadDir(dir)
-	if err != nil {
-		log.Println(err)
-		return details
-	}
-
-	for _, file := range files {
-		info, err := file.Info()
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		if file.IsDir() {
-			details = append(details, FileDetail{
-				Name:    file.Name(),
-				IsDir:   file.IsDir(),
-				ModTime: info.ModTime(),
-			})
-		} else {
-			details = append(details, FileDetail{
-				Name:    file.Name(),
-				IsDir:   file.IsDir(),
-				Size:    info.Size(),
-				ModTime: info.ModTime(),
-			})
-		}
-	}
-
-	return details
-}
-
-// List files in the given directory
-func cFiles(dir string) map[string]bool {
-	lis := make(map[string]bool)
-	files, err := os.ReadDir(dir)
-	if err != nil {
-		log.Println(err)
-		return lis
-	}
-
-	for _, file := range files {
-		fullPath := filepath.Join(dir, file.Name())
-		/*if fullPath == dir {
-			continue
-		}*/
-		lis[fullPath] = file.IsDir()
-	}
-
-	return lis
-}
-
 // isBinary determines if a file at the given path is binary or text.
-func isBinary(filePath string) bool {
+func IsBinary(filePath string) bool {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return true
@@ -175,10 +121,10 @@ func isText(s []byte) bool {
 	return true
 }
 
-func trimName(name string, at int, end ...bool) string {
-	str_len := len(name)
+func TrimText(text string, at int, end ...bool) string {
+	str_len := len(text)
 	if str_len < at {
-		return name
+		return text
 	}
 
 	var dispEnd bool
@@ -189,11 +135,11 @@ func trimName(name string, at int, end ...bool) string {
 	var ending string = "..."
 	if dispEnd {
 		// reverse
-		name = rev(name)
-		cutStr := name[:at]
+		text = rev(text)
+		cutStr := text[:at]
 		return ending + rev(cutStr)
 	}
-	return name[:at] + ending
+	return text[:at] + ending
 }
 
 // From: https://stackoverflow.com/questions/1752414/how-to-reverse-a-string-in-go/1754209#1754209

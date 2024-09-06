@@ -1,7 +1,8 @@
-package src
+package disp
 
 import (
 	"bytes"
+	"codeberg.org/gekkowrld/browse/src"
 	"fmt"
 	"github.com/dustin/go-humanize"
 	"github.com/gomarkdown/markdown"
@@ -30,16 +31,69 @@ type err_re struct {
 	reason string
 }
 
+func cFilesWithDetails(dir string) []FileDetail {
+	var details []FileDetail
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		log.Println(err)
+		return details
+	}
+
+	for _, file := range files {
+		info, err := file.Info()
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		if file.IsDir() {
+			details = append(details, FileDetail{
+				Name:    file.Name(),
+				IsDir:   file.IsDir(),
+				ModTime: info.ModTime(),
+			})
+		} else {
+			details = append(details, FileDetail{
+				Name:    file.Name(),
+				IsDir:   file.IsDir(),
+				Size:    info.Size(),
+				ModTime: info.ModTime(),
+			})
+		}
+	}
+
+	return details
+}
+
+// List files in the given directory
+func cFiles(dir string) map[string]bool {
+	lis := make(map[string]bool)
+	files, err := os.ReadDir(dir)
+	if err != nil {
+		log.Println(err)
+		return lis
+	}
+
+	for _, file := range files {
+		fullPath := filepath.Join(dir, file.Name())
+		/*if fullPath == dir {
+			continue
+		}*/
+		lis[fullPath] = file.IsDir()
+	}
+
+	return lis
+}
+
 func renderDirectory(w http.ResponseWriter, r *http.Request, dirPath, cwd, relativePath string) {
 	// Read the templates
-	dirTmplData, err := templates.ReadFile("dir.tmpl")
+	dirTmplData, err := templates.ReadFile("templates/dir.tmpl")
 	if err != nil {
 		log.Println(err)
 		InternalError(w, r, "Can't read the directory template!")
 		return
 	}
 
-	headerTmplData, err := templates.ReadFile("header.tmpl")
+	headerTmplData, err := templates.ReadFile("templates/header.tmpl")
 	if err != nil {
 		log.Println(err)
 		InternalError(w, r, "Can't read the header template!")
@@ -123,7 +177,7 @@ func renderDirectory(w http.ResponseWriter, r *http.Request, dirPath, cwd, relat
 <div class="f-entry">
 <p><span>%s<a href="/code/%s">%s</a></span> <span>%s</span>  <span>%s</span></p>
 </div>
-`, dirIcon, dir.path, trimName(dir.name, 70), dir.size, dir.mod))
+`, dirIcon, dir.path, src.TrimText(dir.name, 70), dir.size, dir.mod))
 	}
 
 	for _, fi := range filesIn {
@@ -131,7 +185,7 @@ func renderDirectory(w http.ResponseWriter, r *http.Request, dirPath, cwd, relat
 <div class="f-entry">
 <p><span>%s<a href="/code/%s">%s</a></span> <span>%s</span>  <span>%s</span></p>
 </div>
-`, fileIcon, fi.path, trimName(fi.name, 70), fi.size, fi.mod))
+`, fileIcon, fi.path, src.TrimText(fi.name, 70), fi.size, fi.mod))
 	}
 
 	if dmd {

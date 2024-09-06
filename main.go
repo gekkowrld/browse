@@ -1,7 +1,8 @@
 package main
 
 import (
-	"codeberg.org/gekkowrld/browse/src"
+	"codeberg.org/gekkowrld/browse/src/disp"
+	"codeberg.org/gekkowrld/browse/src/search"
 	_ "embed"
 	"fmt"
 	"log"
@@ -13,14 +14,14 @@ import (
 var favicon []byte
 
 func main() {
-	cfg := src.SetConfig()
+	cfg := disp.SetConfig()
 	port := cfg.Port
 	host := cfg.Host
 	open_at := fmt.Sprintf("%s:%d", strings.TrimSuffix(host, ":"), port)
-	http.HandleFunc("/", src.Home)
-	http.HandleFunc("/code/", src.Code)
-	http.HandleFunc("/media/", src.Media)
-	http.HandleFunc("/search", src.Search)
+	http.HandleFunc("/", disp.Home)
+	http.HandleFunc("/code/", disp.Code)
+	http.HandleFunc("/media/", disp.Media)
+	http.HandleFunc("/search", search.Search)
 	http.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
 		w.Write(favicon)
 	})

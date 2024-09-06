@@ -1,8 +1,11 @@
-package src
+package search
 
 import (
 	"bufio"
 	"bytes"
+	"codeberg.org/gekkowrld/browse/src"
+	disp "codeberg.org/gekkowrld/browse/src/disp"
+	"embed"
 	"fmt"
 	"html"
 	"log"
@@ -19,6 +22,8 @@ import (
 )
 
 const perPage int = 10
+
+var templates embed.FS = src.Templates
 
 type SearchData struct {
 	For         string
@@ -45,16 +50,16 @@ type QueryRes struct {
 }
 
 func Search(w http.ResponseWriter, r *http.Request) {
-	searchTmpl, err := templates.ReadFile("search.tmpl")
+	searchTmpl, err := templates.ReadFile("templates/search.tmpl")
 	if err != nil {
 		log.Println(err)
-		NotFound(w, r, "search template not found!")
+		disp.NotFound(w, r, "search template not found!")
 		return
 	}
-	headerTmpl, err := templates.ReadFile("header.tmpl")
+	headerTmpl, err := templates.ReadFile("templates/header.tmpl")
 	if err != nil {
 		log.Println(err)
-		NotFound(w, r, "header template not found!")
+		disp.NotFound(w, r, "header template not found!")
 		return
 	}
 
@@ -62,7 +67,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	_, err = tmpl.New("header").Parse(string(headerTmpl))
 	if err != nil {
 		log.Println(err)
-		InternalError(w, r, "Template parsing error")
+		disp.InternalError(w, r, "Template parsing error")
 		return
 	}
 
@@ -108,7 +113,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	data.HLast = buildPaginationURL(query, totalPages)
 
 	if err := tmpl.Execute(w, data); err != nil {
-		InternalError(w, r, err.Error())
+		disp.InternalError(w, r, err.Error())
 		return
 	}
 }
@@ -121,12 +126,12 @@ func displayPage(results []QueryRes) string {
 	var resultsHTML strings.Builder
 	for _, res := range results {
 		htmlContent := html.EscapeString(res.LineContent)
-		htmlContent = strings.ReplaceAll(htmlContent, res.Query, fmt.Sprintf(`<span class="replace_str">%s</span>`, res.Query))
+		replacedStr := strings.ReplaceAll(src.TrimText(htmlContent, 101), res.Query, fmt.Sprintf(`<span class="replace_str">%s</span>`, res.Query))
 		resultsHTML.WriteString(fmt.Sprintf(`
 <div class="search-result">
-<a href="%s">%s</a> <span>%s:%d</span>
+<a href="%s" title="%s">%s</a> <span>%s:%d</span>
 </div>
-`, res.URL, htmlContent, res.Filename, res.LineNumber))
+`, res.URL, htmlContent, replacedStr, src.TrimText(res.Filename, 32, true), res.LineNumber))
 	}
 
 	return resultsHTML.String()
@@ -136,7 +141,7 @@ func getQuery(query string) []QueryRes {
 	if strings.TrimSpace(query) == "" {
 		return []QueryRes{}
 	}
-	dirs := SetConfig().Directories
+	dirs := disp.SetConfig().Directories
 	if strings.Contains(query, "dir") {
 		re := regexp.MustCompile(`(?m)dir:(\w+)`)
 		matches := re.FindStringSubmatch(query)
@@ -227,7 +232,7 @@ func walkDir(ext, dir, query string) []QueryRes {
 }
 
 func searchFile(relpath, file, query string) ([]QueryRes, error) {
-	if isBinary := isBinary(file); isBinary {
+	if isBinary := src.IsBinary(file); isBinary {
 		return nil, fmt.Errorf("file is a binary")
 	}
 
